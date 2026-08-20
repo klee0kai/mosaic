@@ -43,17 +43,20 @@ public fun runMosaicMain(
 	runMosaicBlocking(content = content)
 }
 
+
 public fun runMosaicBlocking(
 	onNonInteractive: NonInteractivePolicy = Exit,
+	stdStreams: VirtualStdStreams = VirtualStdStreamsImpl(),
 	content: @Composable () -> Unit,
 ): Boolean {
 	return runBlocking {
-		runMosaic(onNonInteractive, content)
+		runMosaic(onNonInteractive, stdStreams, content)
 	}
 }
 
 public suspend fun runMosaic(
 	onNonInteractive: NonInteractivePolicy = Exit,
+	stdStreams: VirtualStdStreams = VirtualStdStreamsImpl(),
 	content: @Composable () -> Unit,
 ): Boolean = withTerminal(onNonInteractive) { terminal ->
 	val rendering = if (env("MOSAIC_DEBUG_RENDERING") == "true") {
@@ -62,19 +65,20 @@ public suspend fun runMosaic(
 		AnsiRendering(terminal.capabilities)
 	}
 
-	runMosaicComposition(terminal, rendering, content)
+	runMosaicComposition(terminal, rendering, stdStreams, content)
 }
 
 internal suspend fun runMosaicComposition(
 	terminal: Terminal,
 	rendering: Rendering,
+	stdStreams: VirtualStdStreams = VirtualStdStreamsImpl(),
 	content: @Composable () -> Unit,
 ) {
 	val clock = BroadcastFrameClock()
 	val mosaicComposition = MosaicComposition(
 		coroutineContext = coroutineContext + clock,
 		onDraw = { rootNode ->
-			print(rendering.render(rootNode).toString())
+			stdStreams.print(rendering.render(rootNode).toString())
 		},
 		terminal = terminal,
 	)
