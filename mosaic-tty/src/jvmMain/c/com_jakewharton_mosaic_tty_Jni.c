@@ -416,7 +416,7 @@ Java_com_jakewharton_mosaic_tty_Jni_streamsFree(
 }
 
 typedef struct MosaicJniTtyCallback {
-	JNIEnv *env;
+	JavaVM *jvm;
 	jobject instance;
 	jmethodID onFocus;
 	jmethodID onKey;
@@ -426,43 +426,59 @@ typedef struct MosaicJniTtyCallback {
 
 static void invokeOnFocusCallback(void *opaque, bool focused) {
 	MosaicJniTtyCallback *callback = (MosaicJniTtyCallback *) opaque;
-	(*callback->env)->CallVoidMethod(
-		callback->env,
-		callback->instance,
-		callback->onFocus,
-		focused
-	);
+	JNIEnv *env;
+	jboolean attached = JNI_FALSE;
+	if ((*callback->jvm)->GetEnv(callback->jvm, (void **)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+		(*callback->jvm)->AttachCurrentThread(callback->jvm, (void **)&env, NULL);
+		attached = JNI_TRUE;
+	}
+	(*env)->CallVoidMethod(env, callback->instance, callback->onFocus, focused);
+	if (attached) {
+		(*callback->jvm)->DetachCurrentThread(callback->jvm);
+	}
 }
 
 static void invokeOnKeyCallback(void *opaque) {
 	MosaicJniTtyCallback *callback = (MosaicJniTtyCallback *) opaque;
-	(*callback->env)->CallVoidMethod(
-		callback->env,
-		callback->instance,
-		callback->onKey
-	);
+	JNIEnv *env;
+	jboolean attached = JNI_FALSE;
+	if ((*callback->jvm)->GetEnv(callback->jvm, (void **)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+		(*callback->jvm)->AttachCurrentThread(callback->jvm, (void **)&env, NULL);
+		attached = JNI_TRUE;
+	}
+	(*env)->CallVoidMethod(env, callback->instance, callback->onKey);
+	if (attached) {
+		(*callback->jvm)->DetachCurrentThread(callback->jvm);
+	}
 }
 
 static void invokeOnMouseCallback(void *opaque) {
 	MosaicJniTtyCallback *callback = (MosaicJniTtyCallback *) opaque;
-	(*callback->env)->CallVoidMethod(
-		callback->env,
-		callback->instance,
-		callback->onMouse
-	);
+	JNIEnv *env;
+	jboolean attached = JNI_FALSE;
+	if ((*callback->jvm)->GetEnv(callback->jvm, (void **)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+		(*callback->jvm)->AttachCurrentThread(callback->jvm, (void **)&env, NULL);
+		attached = JNI_TRUE;
+	}
+	(*env)->CallVoidMethod(env, callback->instance, callback->onMouse);
+	if (attached) {
+		(*callback->jvm)->DetachCurrentThread(callback->jvm);
+	}
 }
 
 static void invokeOnResizeCallback(void *opaque, int columns, int rows, int width, int height) {
 	MosaicJniTtyCallback *callback = (MosaicJniTtyCallback *) opaque;
-	(*callback->env)->CallVoidMethod(
-		callback->env,
-		callback->instance,
-		callback->onResize,
-		columns,
-		rows,
-		width,
-		height
-	);
+	JNIEnv *env;
+	jboolean attached = JNI_FALSE;
+	if ((*callback->jvm)->GetEnv(callback->jvm, (void **)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+		(*callback->jvm)->AttachCurrentThread(callback->jvm, (void **)&env, NULL);
+		attached = JNI_TRUE;
+	}
+	(*env)->CallVoidMethod(env, callback->instance, callback->onResize,
+		columns, rows, width, height);
+	if (attached) {
+		(*callback->jvm)->DetachCurrentThread(callback->jvm);
+	}
 }
 
 JNIEXPORT jlong JNICALL
@@ -500,7 +516,7 @@ Java_com_jakewharton_mosaic_tty_Jni_ttyCallbackInit(
 	if (unlikely(!jniCallback)) {
 		return 0;
 	}
-	jniCallback->env = env;
+	(*env)->GetJavaVM(env, &jniCallback->jvm);
 	jniCallback->instance = globalInstance;
 	jniCallback->onFocus = onFocus;
 	jniCallback->onKey = onKey;

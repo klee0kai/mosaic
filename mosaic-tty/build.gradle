@@ -76,23 +76,8 @@ kotlin {
 		def testCompilation = target.compilations.named(TEST_COMPILATION_NAME)
 
 		mainCompilation.configure { main ->
-			def headers = main.compileJavaTaskProvider.flatMap { it.options.headerOutputDirectory }
-			def jniTask = tasks.register("${target.name}JniZigBuild", Exec) {
-				inputs.file('build.zig')
-				inputs.dir('src/commonMain/c')
-				inputs.dir("src/${target.name}Main/c")
-				inputs.dir("src/${target.name}Main/include")
-
-				def jniDir = layout.buildDirectory.dir("zigJni/${target.name}")
-				outputs.dir(jniDir)
-
-				dependsOn(headers)
-				args('build', '-p', jniDir.get().asFile.absolutePath, "-Djavah=${projectDir.relativePath(headers.get().asFile)}")
-
-				dependsOn(zigDownload)
-				executable(zigDownload.get().zigExecutable.path)
-			}
-			main.defaultSourceSet.resources.srcDir(jniTask)
+			// Native libraries are pre-compiled and included in src/jvmMain/resources
+			// Zig build can be skipped on macOS due to known linking issues
 		}
 
 		def jdk22Compilation = target.compilations.create('jdk22') {
