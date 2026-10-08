@@ -35,8 +35,8 @@ repositories {
 }
 
 dependencies {
-	proGuard 'com.guardsquare:proguard-base:7.9.1'
-	r8 'com.android.tools:r8:9.4.14'
+	proGuard 'com.guardsquare:proguard-base:7.10.0'
+	r8 'com.android.tools:r8:9.4.28'
 }
 
 def zigDownload = tasks.register('zigDownload', ZigDownloadTask) {

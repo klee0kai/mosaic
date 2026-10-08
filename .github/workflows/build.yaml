@@ -16,21 +16,21 @@ jobs:
   tty-test-binaries:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
       - run: ./gradlew :mosaic-tty:installJvmTestDistribution :mosaic-tty:linkNativeDebugTests
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mosaic-tty-jvm-tests
           path: mosaic-tty/build/install/jvmTest
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mosaic-tty-native-tests
           path: mosaic-tty/build/bin
@@ -110,7 +110,7 @@ jobs:
     steps:
       ### NATIVE
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         if: matrix.tests.type == 'native'
         with:
           name: mosaic-tty-native-tests
@@ -125,24 +125,24 @@ jobs:
 
       ### JAVA
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: ${{ matrix.tests.type == 'java' && matrix.tests.version == 'latest' }}
         with:
           sparse-checkout: .github/workflows/.java-version
           sparse-checkout-cone-mode: false
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         if: ${{ matrix.tests.type == 'java' && matrix.tests.version == 'latest' }}
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         if: ${{ matrix.tests.type == 'java' && matrix.tests.version != 'latest' }}
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.tests.version }}
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         if: matrix.tests.type == 'java'
         with:
           name: mosaic-tty-jvm-tests
@@ -160,8 +160,8 @@ jobs:
   tty-shrinker-tests:
     runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
@@ -175,12 +175,12 @@ jobs:
   build:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       # Disabling allTests should be enough, but https://youtrack.jetbrains.com/issue/KT-74509
       # mosaic-tty runs its tests above. We only run jvmTest otherwise as code is all common.
@@ -200,16 +200,16 @@ jobs:
   docs:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - run: ./gradlew dokkaGenerate
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: html-docs
           path: build/dokka/html/
@@ -231,12 +231,12 @@ jobs:
           - jest
     runs-on: ${{ matrix.platform.os }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - run: |
           ./gradlew -p samples/${{ matrix.sample }} installJvmDist linkReleaseExecutable${{ matrix.platform.target }}
@@ -269,12 +269,12 @@ jobs:
       - final-status
 
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version-file: .github/workflows/.java-version
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - run: ./gradlew publish
         env:
@@ -282,15 +282,14 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: html-docs
           path: html-docs
 
-      - uses: JamesIves/github-pages-deploy-action@releases/v3
+      - uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: site
-          FOLDER: html-docs
-          TARGET_FOLDER: docs/latest/
-          CLEAN: true
+          branch: site
+          folder: html-docs
+          target-folder: docs/latest/
+          clean: true
